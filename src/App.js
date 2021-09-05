@@ -3,11 +3,17 @@ import './App.css';
 import { FormControl , MenuItem, Select , Card, CardContent} from '@material-ui/core';
 import InfoBox from './InfoBox';
 import Map from './Map';
+import Table from './Table';
+import {sortData} from './util';
+import LineGraph from './LineGraph';
+import numeral from "numeral";
 
 function App() {
   const [countries, setCountries]=useState([]);
   const [country, setCountry]=useState('Worldwide');
   const [countryInfo, setCountryInfo] = useState({});
+  const [tableData,setTableData]=useState([]);
+  const [casesType, setCasesType] = useState("cases");
 
 
   useEffect(() => {
@@ -18,20 +24,23 @@ function App() {
       })
   },[]);
 
-  useEffect(() => {
+   useEffect(() => {
     const getCountriesData = async () => {
-      await fetch("https://disease.sh/v3/covid-19/countries")
-      .then((response)=> response.json())
-      .then((data)=>{
-        const countries = data.map((country)=>({
-          name: country.country,
-          value: country.countryInfo.iso2,
-        }));
-        setCountries(countries);
-      });
+      fetch("https://disease.sh/v3/covid-19/countries")
+        .then((response) => response.json())
+        .then((data) => {
+          const countries = data.map((country) => ({
+            name: country.country,
+            value: country.countryInfo.iso2,
+          }));
+          let sortedData = sortData(data);
+          setCountries(countries);
+          setTableData(sortedData);
+        });
     };
+
     getCountriesData();
-  }, [])
+  }, []);
 
   const onCountryChange = async (event)=>{
     const countryCode = event.target.value;
@@ -71,7 +80,9 @@ function App() {
       <Card>
       <CardContent>
       <h3>Live Cases by Country</h3>
-      <h3>Worldwide new cases</h3>
+      <Table countries={tableData} />
+      <h3>Worldwide new {casesType}</h3>
+            <LineGraph casesType={casesType} />
       </CardContent>
       </Card>
       </div>
