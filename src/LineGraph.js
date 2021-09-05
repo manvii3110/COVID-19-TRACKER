@@ -3,8 +3,7 @@ import { Line } from "react-chartjs-2";
 import numeral from "numeral";
 
 const options = {
-  legend: {
-    display: false,
+  plugins:{ legend: { display: false },
   },
   elements: {
     point: {
@@ -37,6 +36,7 @@ const options = {
           display: false,
         },
         ticks: {
+          // Include a dollar sign in the ticks
           callback: function (value, index, values) {
             return numeral(value).format("0a");
           },
@@ -75,6 +75,7 @@ function LineGraph({ casesType }) {
           let chartData = buildChartData(data, casesType);
           setData(chartData);
           console.log(chartData);
+          // buildChart(chartData);
         });
     };
 
